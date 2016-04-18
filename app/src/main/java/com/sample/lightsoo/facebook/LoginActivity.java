@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                             AccessToken token = AccessToken.getCurrentAccessToken();
                             //token. 하면 여러가지 정보가있다.
                             Toast.makeText(LoginActivity.this, "id : " + token.getUserId(), Toast.LENGTH_SHORT).show();
-                            user = new User(token.toString(), "2");
+                            user = new User(token.getToken(), "2");
                             Call call = NetworkManager.getInstance().getAPI(LoginAPI.class).login(user); // load login request method in UserApi
                             call.enqueue(new Callback() {
                                 @Override

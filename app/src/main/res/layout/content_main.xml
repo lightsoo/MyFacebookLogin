@@ -12,11 +12,12 @@
     tools:context="com.sample.lightsoo.facebook.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <com.facebook.login.widget.LoginButton
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_auth_login"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="메인화면이야"
+        android:id="@+id/textView2"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
