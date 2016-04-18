@@ -6,9 +6,11 @@ package com.sample.lightsoo.facebook.Data;
 public class Message {
 
     public String msg;
+    public int code;
 
     public Message(){}
-    public Message(String msg) {
+    public Message(int code, String msg) {
+        this.code = code;
         this.msg = msg;
     }
 
