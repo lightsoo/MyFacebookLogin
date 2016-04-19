@@ -54,61 +54,71 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isLogin()) { // 현재 로그인이 안되어있따는 것
-                    //아래 login 함수에서 동작하는 것과 같은 코드.
-                    mLoginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                        @Override
-                        public void onSuccess(LoginResult loginResult) {
-                            //페이스북 가입하면 일련번호를 생성해서 그걸 id로 쓴다.
-                            AccessToken token = AccessToken.getCurrentAccessToken();
-                            //token. 하면 여러가지 정보가있다.
-                            Toast.makeText(LoginActivity.this, "id : " + token.getUserId(), Toast.LENGTH_SHORT).show();
-                            user = new User(token.getToken(), "2");
-                            Call call = NetworkManager.getInstance().getAPI(LoginAPI.class).login(user); // load login request method in UserApi
-                            call.enqueue(new Callback() {
-                                @Override
-                                public void onResponse(Response response, Retrofit retrofit) {
-                                    if(response.isSuccess()){
-                                        Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
-                                        PropertyManager.getInstance().setFaceBook(user.getId());
-                                        PropertyManager.getInstance().setFlag(user.getFlag());
-                                        goMainActivity();
-                                    } else {
-                                        if(response.code() == CODE_ID_PASS_INCORRECT){
-                                            Toast.makeText(LoginActivity.this, "ID or Password incorrect", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(LoginActivity.this, "Server Failure.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                }
 
-                                @Override
-                                public void onFailure(Throwable t) {
-                                    Toast.makeText(LoginActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                loginOrLogout();
 
-
-                        }
-
-                        @Override
-                        public void onCancel() {
-
-                        }
-
-                        @Override
-                        public void onError(FacebookException error) {
-
-                        }
-                    });
-                    //read permission은 글을 읽는 것까지 허용하겠다는것
-                    //세번째 인자에 퍼미션 모록이 들어간다.
-                    //퍼미션 목록은 개발자 사이트에 status & review에 Approved Item에 나와있다.
-                    //write나 기타 추가 퍼미션을 원하면 Submit Items for Approval에 따로 submit해야함
-                    mLoginManager.logInWithReadPermissions(LoginActivity.this, null);
-                } else {
-                    mLoginManager.logOut();
-                }
+//                if (!isLogin()) { // 현재 로그인이 안되어있따는 것
+//                    //아래 login 함수에서 동작하는 것과 같은 코드.
+//
+//
+//
+//                    mLoginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//                        @Override
+//                        public void onSuccess(LoginResult loginResult) {
+//                            //페이스북 가입하면 일련번호를 생성해서 그걸 id로 쓴다.
+//                            AccessToken token = AccessToken.getCurrentAccessToken();
+//                            //token. 하면 여러가지 정보가있다.
+//                            Toast.makeText(LoginActivity.this, "id : " + token.getUserId(), Toast.LENGTH_SHORT).show();
+//                            user = new User(token.getToken(), "2");
+//                            Call call = NetworkManager.getInstance().getAPI(LoginAPI.class).login(user); // load login request method in UserApi
+//                            call.enqueue(new Callback() {
+//                                @Override
+//                                public void onResponse(Response response, Retrofit retrofit) {
+//                                    if (response.isSuccess()) {
+//                                        Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
+//                                        PropertyManager.getInstance().setFaceBook(user.getId());
+//                                        PropertyManager.getInstance().setFlag(user.getFlag());
+//                                        goMainActivity();
+//                                    } else {
+//                                        if (response.code() == CODE_ID_PASS_INCORRECT) {
+//                                            Toast.makeText(LoginActivity.this, "ID or Password incorrect", Toast.LENGTH_SHORT).show();
+//                                        } else {
+//                                            Toast.makeText(LoginActivity.this, "Server Failure.", Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Throwable t) {
+//                                    Toast.makeText(LoginActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
+//                                }
+//                            });
+//                        }
+//
+//                        @Override
+//                        public void onCancel() {
+//
+//                        }
+//
+//                        @Override
+//                        public void onError(FacebookException error) {
+//
+//                        }
+//                    });
+//
+//
+////                    mLoginManager.setLoginBehavior(LoginBehavior.NATIVE_WITH_FALLBACK);
+////                    mLoginManager.setDefaultAudience(DefaultAudience.FRIENDS);
+//                    //read permission은 글을 읽는 것까지 허용하겠다는것
+//                    //세번째 인자에 퍼미션 목록이 들어간다.
+//                    //퍼미션 목록은 개발자 사이트에 status & review에 Approved Item에 나와있다.
+//                    //write나 기타 추가 퍼미션을 원하면 Submit Items for Approval에 따로 submit해야함
+//                    mLoginManager.logInWithReadPermissions(LoginActivity.this, null);
+//
+//
+//                } else {
+//                    mLoginManager.logOut();
+//                }
             }
         });
 
@@ -116,57 +126,38 @@ public class LoginActivity extends AppCompatActivity {
         tracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-                final AccessToken token = AccessToken.getCurrentAccessToken();
-                if(token != null){
-                    flag = PropertyManager.getInstance().getFlag();
-                    user = new User(id, flag);
-                    Call call = NetworkManager.getInstance().getAPI(LoginAPI.class).login(user);
-                    call.enqueue(new Callback() {
-                        @Override
-                        public void onResponse(Response response, Retrofit retrofit) {
-                            if(response.isSuccess()){
-                                Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
-                                PropertyManager.getInstance().setFaceBook(user.getId());
-                                PropertyManager.getInstance().setFlag(user.getFlag());
-                                goMainActivity();
-                            } else {
-                                if(response.code() == CODE_ID_PASS_INCORRECT){
-                                    Toast.makeText(LoginActivity.this, "ID or Password incorrect", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(LoginActivity.this, "Server Failure.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {
-                            Toast.makeText(LoginActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-
-//                    NetworkManager.getInstance().loginFacebookToken(getContext(), token.getToken(), new NetworkManager.OnResultListener<String>() {
+                setLabel();
+//                final AccessToken token = AccessToken.getCurrentAccessToken();
+//                if(token != null){
+//
+//                    /*flag = PropertyManager.getInstance().getFlag();
+//                    user = new User(id, flag);
+//                    Call call = NetworkManager.getInstance().getAPI(LoginAPI.class).login(user);
+//                    call.enqueue(new Callback() {
 //                        @Override
-//                        public void onSuccess(String result) {
-//                            setLabel();
-//                            if(result.equals("OK")){
-//                                PropertyManager.getInstance().setUserLoginId(token.getUserId());
-//                                PropertyManager.getInstance().setLoginType(PropertyManager.LOGIN_TYPE_FACEBOOK);
+//                        public void onResponse(Response response, Retrofit retrofit) {
+//                            if(response.isSuccess()){
+//                                Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
+//                                PropertyManager.getInstance().setFaceBook(user.getId());
+//                                PropertyManager.getInstance().setFlag(user.getFlag());
 //                                goMainActivity();
-//                            } else if(result.equals("NOT_REGISTERED")) { //닉네임을 설정하지 않은사람이거나, 처음 가입한 사람
-//                                ((LoginActivity)getActivity()).pushOnNickSetFragment(token);
+//                            } else {
+//                                if(response.code() == CODE_ID_PASS_INCORRECT){
+//                                    Toast.makeText(LoginActivity.this, "ID or Password incorrect", Toast.LENGTH_SHORT).show();
+//                                } else {
+//                                    Toast.makeText(LoginActivity.this, "Server Failure.", Toast.LENGTH_SHORT).show();
+//                                }
 //                            }
 //                        }
 //
 //                        @Override
-//                        public void onFail(int code) {
-//                            //                           Toast.makeText(getContext(), "흑 페북 연동 실패 ㅠ", Toast.LENGTH_SHORT).show();
+//                        public void onFailure(Throwable t) {
+//                            Toast.makeText(LoginActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
 //                        }
-//                    });
-
-
-
-                }
+//                    });*/
+//                }else{
+//                    setLabel();
+//                }
             }
         };
     }
@@ -190,6 +181,65 @@ public class LoginActivity extends AppCompatActivity {
     private boolean isLogin(){
         AccessToken token = AccessToken.getCurrentAccessToken();
         return token == null ? false:true;
+    }
+
+
+    private void loginOrLogout() {
+        if(!isLogin()) {
+            mLoginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    //페이스북 가입하면 일련번호를 생성해서 그걸 id로 쓴다.
+                    AccessToken token = AccessToken.getCurrentAccessToken();
+                    //token. 하면 여러가지 정보가있다.
+                    Toast.makeText(LoginActivity.this, "id : " + token.getUserId(), Toast.LENGTH_SHORT).show();
+                    user = new User(token.getToken(), "2");
+                    Call call = NetworkManager.getInstance().getAPI(LoginAPI.class).login(user); // load login request method in UserApi
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onResponse(Response response, Retrofit retrofit) {
+                            if (response.isSuccess()) {
+                                Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
+                                PropertyManager.getInstance().setFaceBook(user.getId());
+                                PropertyManager.getInstance().setFlag(user.getFlag());
+                                goMainActivity();
+                            } else {
+                                if (response.code() == CODE_ID_PASS_INCORRECT) {
+                                    Toast.makeText(LoginActivity.this, "ID or Password incorrect", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(LoginActivity.this, "Server Failure.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            Toast.makeText(LoginActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+
+                @Override
+                public void onError(FacebookException error) {
+
+                }
+            });
+
+//            mLoginManager.setLoginBehavior(LoginBehavior.NATIVE_WITH_FALLBACK);
+//            mLoginManager.setDefaultAudience(DefaultAudience.FRIENDS);
+            //read permission은 글을 읽는 것까지 허용하겠다는것
+            //세번째 인자에 퍼미션 목록이 들어간다.
+            //퍼미션 목록은 개발자 사이트에 status & review에 Approved Item에 나와있다.
+            //write나 기타 추가 퍼미션을 원하면 Submit Items for Approval에 따로 submit해야함
+            mLoginManager.logInWithReadPermissions(this, null);
+        }else {
+            mLoginManager.logOut();
+        }
     }
 
     @Override

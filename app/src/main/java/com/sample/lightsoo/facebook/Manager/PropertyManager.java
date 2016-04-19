@@ -5,9 +5,6 @@ import android.preference.PreferenceManager;
 
 import com.sample.lightsoo.facebook.MyApplication;
 
-/**
- * Created by Tacademy on 2015-10-28.
- */
 public class PropertyManager {
 
     SharedPreferences mPrefs;
