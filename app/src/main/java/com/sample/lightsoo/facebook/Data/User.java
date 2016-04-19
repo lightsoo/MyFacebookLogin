@@ -6,10 +6,10 @@ package com.sample.lightsoo.facebook.Data;
 public class User {
 
     public String id;
-    public String flag;
-    public User(String id, String flag){
+    public String type;
+    public User(String id, String type){
         this.id = id;
-        this.flag = flag;
+        this.type = type;
     }
 
     public void setId(String id) {
@@ -22,8 +22,8 @@ public class User {
         return id;
     }
 
-    public String getFlag() {
-        return flag;
+    public String getType() {
+        return type;
     }
 
 

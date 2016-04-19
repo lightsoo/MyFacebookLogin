@@ -13,7 +13,6 @@ public class PropertyManager {
     private static final String KEY_LOGIN_TYPE = "key_login_type";
     private static final String FILED_FACEBOOK_ID ="facebook";
 
-
     public static final String LOGIN_TYPE_FACEBOOK = "login_type_facebook";
 
     private PropertyManager() {
@@ -38,7 +37,6 @@ public class PropertyManager {
     public String getFaceBookId(){
         return mPrefs.getString(FILED_FACEBOOK_ID, "");
     }
-
 
     public String getLoginType(){
         return mPrefs.getString(KEY_LOGIN_TYPE, "");
