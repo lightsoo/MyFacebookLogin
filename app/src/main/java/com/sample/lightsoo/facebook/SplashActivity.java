@@ -148,7 +148,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void doRealStart(){
         loginType = PropertyManager.getInstance().getLoginType();
-        userLoginId = PropertyManager.getInstance().getFaceBookId();
+        userLoginId = PropertyManager.getInstance().getUserLoginId();
         //로그인 한적이 없을 경우 혹은 로그아웃했을 경우 → 로그인 액티비티로 이동
         if(TextUtils.isEmpty(loginType)){
             mHandler.postDelayed(new Runnable() {

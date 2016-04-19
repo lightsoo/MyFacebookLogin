@@ -77,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void onResponse(Response response, Retrofit retrofit) {
                             if(response.isSuccess()){
                                 Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
-                                PropertyManager.getInstance().setFaceBookId(userLoginId);
+                                PropertyManager.getInstance().setUserLoginId(userLoginId);
                                 PropertyManager.getInstance().setLoginType(PropertyManager.LOGIN_TYPE_FACEBOOK);
                                 goMainActivity();
                             } else {

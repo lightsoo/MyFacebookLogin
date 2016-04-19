@@ -24,7 +24,7 @@ public class PropertyManager {
     public static PropertyManager getInstance(){ return InstanceHolder.INSTANCE; }
 
 
-    public void setFaceBookId(String id){
+    public void setUserLoginId(String id){
         mEditor.putString(FILED_FACEBOOK_ID, id);
         mEditor.commit();
     }
@@ -34,7 +34,7 @@ public class PropertyManager {
         mEditor.commit();
     }
 
-    public String getFaceBookId(){
+    public String getUserLoginId(){
         return mPrefs.getString(FILED_FACEBOOK_ID, "");
     }
 
