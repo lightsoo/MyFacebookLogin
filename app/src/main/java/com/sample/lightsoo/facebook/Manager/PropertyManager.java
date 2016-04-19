@@ -10,8 +10,11 @@ public class PropertyManager {
     SharedPreferences mPrefs;
     SharedPreferences.Editor mEditor;
 
-    public static final String KEY_ID = "key_id";
-    public static final String KEY_FLAG = "key_flag";
+    private static final String KEY_LOGIN_TYPE = "key_login_type";
+    private static final String FILED_FACEBOOK_ID ="facebook";
+
+
+    public static final String LOGIN_TYPE_FACEBOOK = "login_type_facebook";
 
     private PropertyManager() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
@@ -21,24 +24,25 @@ public class PropertyManager {
     public static class InstanceHolder{ private static final PropertyManager INSTANCE = new PropertyManager();}
     public static PropertyManager getInstance(){ return InstanceHolder.INSTANCE; }
 
-    private static final String FILED_FACEBOOK_ID ="facebook";
 
-    public void setFaceBook(String id){
+    public void setFaceBookId(String id){
         mEditor.putString(FILED_FACEBOOK_ID, id);
         mEditor.commit();
     }
-    public void setFlag(String flag){
-        mEditor.putString(KEY_FLAG, flag);
+
+    public void setLoginType(String loginType){
+        mEditor.putString(KEY_LOGIN_TYPE, loginType);
         mEditor.commit();
     }
+
     public String getFaceBookId(){
         return mPrefs.getString(FILED_FACEBOOK_ID, "");
     }
 
-    public String getFlag(){
-        return mPrefs.getString(KEY_FLAG, "");
-    }
 
+    public String getLoginType(){
+        return mPrefs.getString(KEY_LOGIN_TYPE, "");
+    }
 
 
 }
