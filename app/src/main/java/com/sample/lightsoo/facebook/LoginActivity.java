@@ -3,6 +3,7 @@ package com.sample.lightsoo.facebook;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -39,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     LoginManager mLoginManager;
     AccessTokenTracker tracker;
 
-    String loginType;
+//    String loginType;
     String userLoginId;
     User user;
 
@@ -64,12 +65,15 @@ public class LoginActivity extends AppCompatActivity {
         tracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-//                setLabel();
+
 
                 final AccessToken token = AccessToken.getCurrentAccessToken();
+//                Log.d(TAG, "token : " + token.getToken());
                 if(token != null){
 
-                    userLoginId = token.getUserId();
+//                    userLoginId = token.getUserId();
+                    userLoginId = token.getToken();
+                    Log.d(TAG, "userLoginId : " + userLoginId);
                     user = new User(userLoginId, PropertyManager.LOGIN_TYPE_FACEBOOK);
                     Call call = NetworkManager.getInstance().getAPI(LoginAPI.class).login(user);
                     call.enqueue(new Callback() {

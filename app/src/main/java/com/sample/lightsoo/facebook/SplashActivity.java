@@ -10,13 +10,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.sample.lightsoo.facebook.Data.User;
 import com.sample.lightsoo.facebook.Manager.NetworkManager;
 import com.sample.lightsoo.facebook.Manager.PropertyManager;
@@ -29,7 +25,7 @@ import retrofit.Retrofit;
 
 //페북 개발자 사이트 setting에서 액티비티를 이걸로 바꿔야한다.
 public class SplashActivity extends AppCompatActivity {
-
+    private static final String TAG = "SplashActivity";
     Handler mHandler = new Handler(Looper.getMainLooper());
 
     //for facebook
@@ -154,7 +150,7 @@ public class SplashActivity extends AppCompatActivity {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("test", "로그인 한적이 없어서 로그인페이지로 이동");
+                    Log.d(TAG, "로그인 한적이 없어서 로그인페이지로 이동");
                     goLoginActivity();
                 }
             }, 500);
@@ -162,14 +158,73 @@ public class SplashActivity extends AppCompatActivity {
             switch (loginType){
                 case PropertyManager.LOGIN_TYPE_FACEBOOK:
                     //로그인 id가 존재할경우
-                    if(!TextUtils.isEmpty(userLoginId)){//페북 로긴 트랙킹 시작
-                        mTokenTracker = new AccessTokenTracker() {
+                    if(!TextUtils.isEmpty(userLoginId)){
+
+                        Log.d(TAG, "id가 있는경우 :!TextUtils.isEmpty(userLoginId))");
+                        Log.d(TAG, "userLoginId : " + userLoginId );
+
+
+                        loginType = PropertyManager.getInstance().getLoginType();
+                        User user = new User(userLoginId, loginType);
+
+                        Call call = NetworkManager.getInstance().getAPI(LoginAPI.class).login(user);
+                        call.enqueue(new Callback() {
+                            @Override
+                            public void onResponse(Response response, Retrofit retrofit) {
+                                if (response.isSuccess()) {//이전에 가입되었던 사람이라면 OK,
+                                    Toast.makeText(SplashActivity.this, "페이스북 연동 로그인으로 입장 합니다.", Toast.LENGTH_SHORT).show();
+                                    goMainActivity();
+                                } else {
+                                    //아니라면 not registered
+                                    mLoginManager.logOut();
+                                    goLoginActivity();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                Toast.makeText(SplashActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
+                                goLoginActivity();
+                            }
+                        });
+
+
+
+
+                    //페북 로긴 트랙킹 시작,
+                    // AccessTokenTracker : to receive notifications of access token changes.
+
+
+
+                        /*mTokenTracker = new AccessTokenTracker() {
                             @Override
                             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+
+
+
+
                                 AccessToken token = AccessToken.getCurrentAccessToken();
                                 if (token != null) {
+//                                     old에서 처음 로그인 할떄랑 같은 토큰값이 나와
+//                                     근데 AccessToken.getCurrentAccessToken()을하면 값이 바뀌는데 왜!!!왜 바뀌는 거냐 ㅅㅂ
+
+                                    Log.d(TAG, "id가 있는경우 :!TextUtils.isEmpty(userLoginId))");
+                                    Log.d(TAG, "userLoginId : " + userLoginId );
+
+                                    Log.d(TAG, "new : " + currentAccessToken.getToken());
+
+                                    Log.d(TAG, "old : " + oldAccessToken.getToken());
+
+
                                     //페북에 지금 로그인되어있는 id랑 내 앱에 저장된 fb 로긴id랑 같으면
-                                    if (token.getUserId().equals(userLoginId)) {
+                                    //getUserId() : Returns the user id for this access token.
+//                                    if (token.getUserId().equals(userLoginId)) {
+                                    Log.d(TAG,"token.getToken() : " +token.getToken());
+                                    Log.d(TAG,"userLoginId : " + userLoginId);
+
+                                    if (token.getToken().equals(userLoginId)) {
+                                        Log.d(TAG,"token.getToken().equals(userLoginId)이 맞는경우!! " );
+
                                         loginType = PropertyManager.getInstance().getLoginType();
                                         User user = new User(userLoginId, loginType);
                                         Call call = NetworkManager.getInstance().getAPI(LoginAPI.class).login(user);
@@ -192,8 +247,10 @@ public class SplashActivity extends AppCompatActivity {
                                                 goLoginActivity();
                                             }
                                         });
-                                    } else { //페북 로그인 했는데 일전에 레몬클립에서 페북으로 로그인한 id와 다를 경우
-                                        //즉, 이앱으로 페북로그인했다가 다른 페북id로 페북 앱을 로그인 했을 경우
+                                    } else {
+                                        Log.d(TAG,"token.getToken().equals(userLoginId)이 아닌경우!! : " );
+                                    //페북 로그인 했는데 일전에 레몬클립에서 페북으로 로그인한 id와 다를 경우
+                                    // 즉, 이앱으로 페북로그인했다가 다른 페북id로 페북 앱을 로그인 했을 경우
                                         mHandler.postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
@@ -204,8 +261,14 @@ public class SplashActivity extends AppCompatActivity {
                                         }, 500);
                                     }
                                 }
+
+
+
+
                             }
                         };
+
+
                         //페이스북 로그인 시도
                         mLoginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                             @Override
@@ -220,17 +283,21 @@ public class SplashActivity extends AppCompatActivity {
 
                             @Override
                             public void onError(FacebookException error) {
+                                Log.d(TAG, error.toString());
                                 Toast.makeText(SplashActivity.this, "페이스북 앱에 다른 계정으로 로그인 한적이 있다", Toast.LENGTH_SHORT).show();
                                 goLoginActivity();
                             }
-                        });
+                        });*/
+
 
                         mLoginManager.logInWithReadPermissions(this, null);
                     }else{//id가 없을경우에 로그인 페이지로 이동!!!
+                        Log.d(TAG, "id가 없는경우 : !TextUtils.isEmpty(userLoginId))");
                         mHandler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(SplashActivity.this, "Welcome! please log-in!", Toast.LENGTH_SHORT).show();
+
                                 goLoginActivity();
                             }
                         }, 1500);
